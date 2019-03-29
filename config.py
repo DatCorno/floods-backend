@@ -14,7 +14,7 @@ class Config(object):
     SV_PREFIX = 'gsv_{}.jpg'
 
 with open(Config.API_KEYS_FILE, 'r') as f:
-    keys = yaml.load(f)
+    keys = yaml.load(f, Loader=yaml.FullLoader)
 
     for key, value in keys.items():
         setattr(Config, key, value)
