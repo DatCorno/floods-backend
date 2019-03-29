@@ -1,17 +1,18 @@
-from config import Config
+import os
+import sys
 
 from googlegeocoder import GoogleGeocoder
 import google_streetview.api as sw_api
 import google_streetview.helpers as sw_helpers
 
-import os
-import sys
+from config import Config
+
 
 def find_location(address):
     """Find the coordinates of a location.
 
-    Using `GoogleGeocode`, find the latitude and longitude of an address and extract important
-    information for the StreetView API.
+    Using `GoogleGeocode`, find the latitude and longitude of an address and extract
+    important information for the StreetView API.
 
     Parameters
     ----------
@@ -31,22 +32,19 @@ def find_location(address):
     latitude = str(location.geometry.location.lat)
     longitude = str(location.geometry.location.lng)
 
-    full_location = {'address': address,
-                     'latitude': latitude,
-                     'longitude': longitude
-                    }
+    full_location = {"address": address, "latitude": latitude, "longitude": longitude}
 
-    full_location['global_code'] = str(get_unique_id(location, full_location))
+    full_location["global_code"] = str(get_unique_id(location, full_location))
 
     return full_location
 
 
 def get_unique_id(location, full_location):
     """Return a unique id for that location.
-    
-    A unique id is required for the directory containing the StreetView images. If the image
-    has a global code, use it. Otherwise, create a string from the longitude and latitude of
-    the address and hash it.
+
+    A unique id is required for the directory containing the StreetView images.
+    If the image has a global code, use it. Otherwise, create a string from the
+    longitude and latitude of the address and hash it.
 
     Parameters
     ----------
@@ -59,12 +57,12 @@ def get_unique_id(location, full_location):
     -------
     str:
         Global code or hash of the latitude and longitude
-    
-    """
-    if hasattr(location, 'plus_code'):
-        return location.plus_code.global_code
 
-    h = hash(','.join([full_location['latitude'], full_location['longitude']]))
+    """
+    if hasattr(location, "plus_code"):
+        return location.plus_code["global_code"]
+
+    h = hash(",".join([full_location["latitude"], full_location["longitude"]]))
     h += sys.maxsize + 1
     return h
 
@@ -72,8 +70,8 @@ def get_unique_id(location, full_location):
 def fetch_street_view_images(location):
     """Retrieve StreetView images for the location.
 
-    Create the parameters for the request and call the StreetView API to retrieve an image
-    of the location and store it under a certain directory.
+    Create the parameters for the request and call the StreetView API to
+    retrieve an image of the location and store it under a certain directory.
 
     Parameters
     ----------
@@ -98,6 +96,7 @@ def fetch_street_view_images(location):
 
     return image_dir, results
 
+
 def create_params(location):
     """Create the parameters for the StreetView API call.
 
@@ -112,14 +111,15 @@ def create_params(location):
         A dictionary containing the necessary parameters for the StreetView API call.
 
     """
-    lat_and_long = [location['latitude'], location['longitude']]
-    stringified_location = ','.join(lat_and_long)
+    lat_and_long = [location["latitude"], location["longitude"]]
+    stringified_location = ",".join(lat_and_long)
 
-    params = {'size': '512x512',
-              'location': stringified_location,
-              'pitch': '0',
-              'key': Config.STREET_VIEW_API_KEY
-             }
+    params = {
+        "size": "512x512",
+        "location": stringified_location,
+        "pitch": "0",
+        "key": Config.STREET_VIEW_API_KEY,
+    }
 
     return params
 
@@ -138,7 +138,9 @@ def ensure_image_directory(location):
         Path to the image directory for this location.
 
     """
-    image_dir = os.path.join(Config.BASE_DIR, Config.DOWNLOAD_DIR, location['global_code'])
+    image_dir = os.path.join(
+        Config.BASE_DIR, Config.DOWNLOAD_DIR, location["global_code"]
+    )
 
     if not os.path.exists(image_dir):
         os.makedirs(image_dir)
