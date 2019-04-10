@@ -45,6 +45,7 @@ class Config:
 
 
 if os.path.exists(Config.API_KEYS_FILE):
+    print(os.environ)
     with open(Config.API_KEYS_FILE, 'r') as f:
         keys = yaml.load(f)
 
