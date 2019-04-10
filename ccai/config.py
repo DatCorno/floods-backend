@@ -51,7 +51,6 @@ if os.path.exists(Config.API_KEYS_FILE):
         for key, value in keys.items():
             setattr(Config, key, value)
 else:
-    print(os.environ)
     for name in Config._API_KEYS_NAME:
         key = os.environ.get(name, None)
 
